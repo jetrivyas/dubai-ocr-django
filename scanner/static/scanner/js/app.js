@@ -181,6 +181,37 @@ function stopAnalysisLoop() {
     if (analysisLoop) { clearInterval(analysisLoop); analysisLoop = null; }
 }
 
+function getCropRect() {
+    const video = cameraFeed;
+    const vRect = video.getBoundingClientRect();
+    const oRect = cameraOverlay.getBoundingClientRect();
+
+    const videoRatio = video.videoWidth / video.videoHeight;
+    const containerRatio = vRect.width / vRect.height;
+
+    let renderWidth, renderHeight, offsetX, offsetY;
+
+    if (videoRatio > containerRatio) {
+        renderHeight = vRect.height;
+        renderWidth = renderHeight * videoRatio;
+        offsetX = (renderWidth - vRect.width) / 2;
+        offsetY = 0;
+    } else {
+        renderWidth = vRect.width;
+        renderHeight = renderWidth / videoRatio;
+        offsetX = 0;
+        offsetY = (renderHeight - vRect.height) / 2;
+    }
+
+    const scale = video.videoWidth / renderWidth;
+    return {
+        sx: Math.max(0, Math.floor(((oRect.left - vRect.left) + offsetX) * scale)),
+        sy: Math.max(0, Math.floor(((oRect.top - vRect.top) + offsetY) * scale)),
+        sw: Math.floor(oRect.width * scale),
+        sh: Math.floor(oRect.height * scale)
+    };
+}
+
 function analyseFrame() {
     if (!mediaStream || cameraFeed.videoWidth === 0) return;
 
@@ -191,9 +222,8 @@ function analyseFrame() {
     const ctx = captureCanvas.getContext('2d');
     ctx.drawImage(cameraFeed, 0, 0, vw, vh);
 
-    // Sample centre region (the area inside the overlay)
-    const sx = Math.floor(vw * 0.2), sy = Math.floor(vh * 0.2);
-    const sw = Math.floor(vw * 0.6), sh = Math.floor(vh * 0.6);
+    // Sample centre region exactly matching the visual overlay box
+    const { sx, sy, sw, sh } = getCropRect();
     const imgData = ctx.getImageData(sx, sy, sw, sh);
     const d = imgData.data;
     const totalPx = sw * sh;
@@ -380,14 +410,9 @@ function autoCapture() {
     stopAnalysisLoop();
 
     const video = cameraFeed;
-    const vw = video.videoWidth;
-    const vh = video.videoHeight;
 
-    // The document is inside the overlay box (20% from edges, 60% width/height)
-    const sx = Math.floor(vw * 0.2);
-    const sy = Math.floor(vh * 0.2);
-    const sw = Math.floor(vw * 0.6);
-    const sh = Math.floor(vh * 0.6);
+    // Use the dynamic crop rectangle matching the exact visual overlay
+    const { sx, sy, sw, sh } = getCropRect();
 
     // Set canvas to the cropped dimensions
     captureCanvas.width  = sw;
