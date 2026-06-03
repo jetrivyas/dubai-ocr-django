@@ -524,8 +524,6 @@ function handleApiResponse(data) {
     // Debug string to show exactly what the API returned
     const debugMrz = `[API returned -> mrz1: "${ocr.mrz1 || ''}", mrz2: "${ocr.mrz2 || ''}", mrz3: "${ocr.mrz3 || ''}"]`;
 
-    // TEMPORARILY DISABLED MRZ CONSTRAINTS AS REQUESTED
-    /*
     if (currentDocType === 'passport') {
         // Passport requires exactly 2 MRZ lines (mrz1, mrz2) and NO mrz3
         if (!(m1 && m2 && !m3)) {
@@ -539,7 +537,6 @@ function handleApiResponse(data) {
             return;
         }
     }
-    */
 
     if (isExtractedValid(data)) {
         showResultsSuccess(data);
