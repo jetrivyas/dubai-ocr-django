@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Document Extraction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'scanner/css/styles.css' %}">
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-2">
+            Jumeirah AI Scanner
+        </h1>
+        <p class="text-gray-400">Next-gen Document OCR Extraction</p>
+    </header>
+
+    <!-- Main Container -->
+    <div id="app-container" class="w-full max-w-3xl bg-gray-800 rounded-2xl shadow-2xl p-6 relative overflow-hidden border border-gray-700">
+        
+        <!-- View 1: Select Document Type -->
+        <div id="view-doc-type" class="view-panel active flex flex-col items-center space-y-6 animate-fade-in">
+            <h2 class="text-2xl font-semibold">Select Document Type</h2>
+            <div class="flex gap-6 w-full justify-center">
+                <button onclick="selectDocType('passport')" class="flex-1 max-w-[200px] aspect-square flex flex-col items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-xl transition-all duration-300 hover:scale-105 border border-transparent hover:border-blue-400 group">
+                    <svg class="w-16 h-16 text-blue-400 group-hover:text-blue-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"></path></svg>
+                    <span class="font-medium text-lg">Passport</span>
+                </button>
+                <button onclick="selectDocType('id')" class="flex-1 max-w-[200px] aspect-square flex flex-col items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-xl transition-all duration-300 hover:scale-105 border border-transparent hover:border-emerald-400 group">
+                    <svg class="w-16 h-16 text-emerald-400 group-hover:text-emerald-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    <span class="font-medium text-lg">ID Card</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- View 2: Select Method -->
+        <div id="view-method" class="view-panel hidden flex flex-col items-center space-y-6 animate-fade-in">
+            <button onclick="goBack('view-doc-type')" class="absolute top-4 left-4 text-gray-400 hover:text-white flex items-center">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Back
+            </button>
+            <h2 class="text-2xl font-semibold">How would you like to provide the <span id="lbl-doc-type" class="text-blue-400"></span>?</h2>
+            <div class="flex gap-6 w-full justify-center">
+                <button onclick="showReadyScreen()" class="flex-1 max-w-[200px] aspect-square flex flex-col items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-xl transition-all duration-300 hover:scale-105 border border-transparent hover:border-purple-400 group">
+                    <svg class="w-16 h-16 text-purple-400 group-hover:text-purple-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="font-medium text-lg">Scan with Camera</span>
+                </button>
+                <button onclick="startUpload()" class="flex-1 max-w-[200px] aspect-square flex flex-col items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-xl transition-all duration-300 hover:scale-105 border border-transparent hover:border-pink-400 group">
+                    <svg class="w-16 h-16 text-pink-400 group-hover:text-pink-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <span class="font-medium text-lg">Upload File</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- View 3: Ready to Scan prompt -->
+        <div id="view-ready" class="view-panel hidden flex flex-col items-center space-y-6 animate-fade-in w-full">
+            <button onclick="goBack('view-method')" class="self-start text-gray-400 hover:text-white flex items-center mb-2">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Back
+            </button>
+            <div class="flex flex-col items-center space-y-4 py-8">
+                <svg class="w-24 h-24 text-blue-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <h2 id="ready-title" class="text-2xl font-semibold text-center">Ready to scan your Passport?</h2>
+                <p class="text-gray-400 text-center max-w-sm">Place the document on a flat, well-lit surface. The scanner will auto-capture when conditions are ideal.</p>
+                <button onclick="startScanning()" class="mt-4 px-10 py-4 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-blue-500/30 hover:scale-105">
+                    Start Scanning
+                </button>
+            </div>
+        </div>
+
+        <!-- View 4: Live Scanner -->
+        <div id="view-scanner" class="view-panel hidden flex flex-col items-center space-y-3 animate-fade-in w-full">
+            <button onclick="stopScanning(); goBack('view-method')" class="self-start text-gray-400 hover:text-white flex items-center mb-1">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Back
+            </button>
+            <h2 id="scanner-instruction" class="text-lg font-semibold text-center text-blue-300">Scanning...</h2>
+            
+            <!-- Camera Feed -->
+            <div class="relative w-full max-w-lg bg-black rounded-lg overflow-hidden flex justify-center items-center aspect-[4/3]">
+                <video id="camera-feed" class="w-full h-full object-cover" autoplay playsinline></video>
+                <div id="camera-overlay" class="absolute border-2 border-dashed rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] transition-all duration-300"></div>
+                <!-- Scan line animation -->
+                <div id="scan-line" class="absolute left-[15%] right-[15%] h-[3px] bg-red-500 rounded-full opacity-0 transition-all duration-300" style="top: 20%;"></div>
+            </div>
+
+            <!-- Live Feedback -->
+            <div id="live-feedback" class="text-center text-sm font-medium text-yellow-300 min-h-[24px] transition-all">
+                Analyzing document...
+            </div>
+
+            <!-- Quality Indicators -->
+            <div class="grid grid-cols-5 gap-2 w-full max-w-lg text-xs font-mono">
+                <div class="flex flex-col items-center p-2 bg-gray-700 rounded-lg">
+                    <span class="text-gray-400 mb-1">Light</span>
+                    <span id="stat-light" class="font-bold text-yellow-400">...</span>
+                </div>
+                <div class="flex flex-col items-center p-2 bg-gray-700 rounded-lg">
+                    <span class="text-gray-400 mb-1">Blur</span>
+                    <span id="stat-blur" class="font-bold text-yellow-400">...</span>
+                </div>
+                <div class="flex flex-col items-center p-2 bg-gray-700 rounded-lg">
+                    <span class="text-gray-400 mb-1">Stable</span>
+                    <span id="stat-stable" class="font-bold text-yellow-400">...</span>
+                </div>
+                <div class="flex flex-col items-center p-2 bg-gray-700 rounded-lg">
+                    <span class="text-gray-400 mb-1">Scale</span>
+                    <span id="stat-scale" class="font-bold text-yellow-400">...</span>
+                </div>
+                <div class="flex flex-col items-center p-2 bg-gray-700 rounded-lg">
+                    <span class="text-gray-400 mb-1">Quality</span>
+                    <span id="stat-quality" class="font-bold text-yellow-400">...</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full max-w-lg">
+                <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                    <div id="scan-progress" class="h-full rounded-full transition-all duration-500 bg-red-500" style="width: 0%"></div>
+                </div>
+                <p id="scan-progress-label" class="text-xs text-gray-400 text-center mt-1">0 / 5 checks passed</p>
+            </div>
+        </div>
+
+        <!-- View 5: Upload -->
+        <div id="view-upload" class="view-panel hidden flex flex-col items-center space-y-6 animate-fade-in w-full">
+            <button onclick="goBack('view-method')" class="self-start text-gray-400 hover:text-white flex items-center">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Back
+            </button>
+            <h2 id="upload-instruction" class="text-2xl font-semibold">Upload Document</h2>
+            
+            <div class="w-full max-w-md flex flex-col gap-4">
+                <div id="upload-front-container" class="w-full">
+                    <label class="block mb-2 text-sm font-medium">Front Side (or Passport)</label>
+                    <input type="file" id="file-front" accept="image/*" class="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 bg-gray-700 rounded-full cursor-pointer">
+                </div>
+                <div id="upload-back-container" class="w-full hidden">
+                    <label class="block mb-2 text-sm font-medium">Back Side</label>
+                    <input type="file" id="file-back" accept="image/*" class="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 bg-gray-700 rounded-full cursor-pointer">
+                </div>
+                
+                <button onclick="submitUpload()" class="mt-4 px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-semibold text-lg transition-colors shadow-lg w-full">
+                    Extract Data
+                </button>
+            </div>
+        </div>
+
+        <!-- View 6: Processing / Loader -->
+        <div id="view-processing" class="view-panel hidden flex flex-col items-center justify-center space-y-6 py-12 animate-fade-in">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <h2 class="text-2xl font-semibold animate-pulse text-blue-400">Extracting Data...</h2>
+            <p class="text-gray-400">Our AI is analyzing the document</p>
+        </div>
+
+        <!-- View 7: Results / Error -->
+        <div id="view-results" class="view-panel hidden flex flex-col items-center space-y-6 animate-fade-in w-full">
+            <h2 id="result-title" class="text-3xl font-bold text-emerald-400">Success!</h2>
+            
+            <div id="copy-container" class="w-full flex justify-end hidden">
+                <button onclick="copyJson()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg shadow transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    Copy JSON
+                </button>
+            </div>
+
+            <div id="result-content" class="w-full bg-gray-900 rounded-lg p-4 text-sm font-mono overflow-auto text-left border border-gray-700">
+            </div>
+            <div id="result-message" class="text-red-400 font-semibold hidden text-center"></div>
+            <button onclick="resetFlow()" class="px-8 py-3 bg-gray-700 hover:bg-gray-600 rounded-full font-semibold text-lg transition-colors shadow-lg">
+                Try Again
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Hidden canvas -->
+    <canvas id="capture-canvas" class="hidden"></canvas>
+
+    <script>
+        const csrfToken = '{{ csrf_token }}';
+    </script>
+    <script src="{% static 'scanner/js/app.js' %}"></script>
+</body>
+</html>

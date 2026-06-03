@@ -1,0 +1,46 @@
+.view-panel {
+    display: none;
+    opacity: 0;
+}
+
+.view-panel.active {
+    display: flex;
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Centre the overlay guide inside the camera box */
+#camera-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Passport overlay — wider rectangle */
+.overlay-passport {
+    width: 80%;
+    height: 60%;
+    border-radius: 12px;
+}
+
+/* ID card overlay — credit-card aspect ratio */
+.overlay-id {
+    width: 75%;
+    height: 50%;
+    border-radius: 12px;
+}
+
+/* Scan line glow */
+#scan-line {
+    box-shadow: 0 0 8px 2px currentColor;
+    pointer-events: none;
+}
