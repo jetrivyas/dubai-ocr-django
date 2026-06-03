@@ -12,7 +12,7 @@ let lastApiResponse = null;
 let prevFrameData  = null;
 let stableCount    = 0;        // how many consecutive frames were stable
 let allPassCount   = 0;        // how many consecutive frames had ALL checks green
-const CAPTURE_AFTER = 3;       // auto-capture after this many consecutive all-green frames
+const CAPTURE_AFTER = 5;       // auto-capture after this many consecutive all-green frames
 
 // ============================================================
 // DOM refs
@@ -144,7 +144,12 @@ function openCamera() {
     }
     navigator.mediaDevices
         .getUserMedia({
-            video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
+            video: { 
+                facingMode: 'environment', 
+                width: { ideal: 4096 }, 
+                height: { ideal: 4096 },
+                advanced: [{ focusMode: "continuous" }] 
+            }
         })
         .then(stream => {
             mediaStream = stream;
