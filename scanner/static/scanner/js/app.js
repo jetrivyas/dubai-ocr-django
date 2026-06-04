@@ -53,8 +53,12 @@ const fileBack             = document.getElementById('file-back');
 // Navigation
 // ============================================================
 function showView(name) {
-    Object.values(views).forEach(v => v.classList.remove('active'));
-    views[name].classList.add('active');
+    Object.values(views).forEach(v => {
+        v.classList.add('hidden');
+        v.classList.remove('flex');
+    });
+    views[name].classList.remove('hidden');
+    views[name].classList.add('flex');
 }
 
 const viewIdMap = { 'view-doc-type': 'docType', 'view-method': 'method' };
