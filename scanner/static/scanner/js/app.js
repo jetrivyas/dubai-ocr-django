@@ -527,13 +527,13 @@ function handleApiResponse(data) {
     if (currentDocType === 'passport') {
         // Passport requires exactly 2 MRZ lines (mrz1, mrz2) and NO mrz3
         if (!(m1 && m2 && !m3)) {
-            showResultsError(`Invalid Scan: Passport must have exactly 2 MRZ lines detected. ${debugMrz}`);
+            showResultsError(`Invalid Scan: Passport must have exactly 2 MRZ lines detected.`);
             return;
         }
     } else if (currentDocType === 'id') {
         // ID requires exactly 3 MRZ lines (mrz1, mrz2, mrz3)
         if (!(m1 && m2 && m3)) {
-            showResultsError(`Invalid Scan: ID Card must have exactly 3 MRZ lines detected. ${debugMrz}`);
+            showResultsError(`Invalid Scan: ID Card must have exactly 3 MRZ lines detected.`);
             return;
         }
     }
