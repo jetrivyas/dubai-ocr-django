@@ -39,8 +39,14 @@
     border-radius: 12px;
 }
 
+@keyframes scanLineAnim {
+    0%, 100% { top: 20%; }
+    50% { top: 75%; }
+}
+
 /* Scan line glow */
 #scan-line {
     box-shadow: 0 0 8px 2px currentColor;
     pointer-events: none;
+    animation: scanLineAnim 2s ease-in-out infinite;
 }

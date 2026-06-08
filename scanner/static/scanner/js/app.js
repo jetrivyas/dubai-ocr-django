@@ -367,8 +367,7 @@ function analyseFrame() {
         cameraOverlay.classList.add('border-yellow-400');
     }
 
-    // Animate scan line up/down
-    animateScanLine();
+
 
     // ---- AUTO CAPTURE ----
     if (qualityOk) {
@@ -402,15 +401,7 @@ function updateProgress(pct) {
     }
 }
 
-// Scan line animation
-let scanLineDirection = 1;
-let scanLinePos = 20;
-function animateScanLine() {
-    scanLinePos += scanLineDirection * 4;
-    if (scanLinePos > 75) scanLineDirection = -1;
-    if (scanLinePos < 20) scanLineDirection = 1;
-    scanLine.style.top = scanLinePos + '%';
-}
+
 
 // ============================================================
 // 5. Auto-capture
