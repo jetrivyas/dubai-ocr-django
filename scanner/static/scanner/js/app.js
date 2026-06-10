@@ -150,20 +150,21 @@ function openCamera() {
         .getUserMedia({
             video: { 
                 facingMode: 'environment', 
-                width: { ideal: 4096 }, 
-                height: { ideal: 4096 },
-                advanced: [{ focusMode: "continuous" }] 
+                width: { ideal: 1920 }, 
+                height: { ideal: 1080 }
             }
         })
         .then(stream => {
             mediaStream = stream;
             cameraFeed.srcObject = stream;
             cameraFeed.onloadedmetadata = () => {
+                cameraFeed.play().catch(e => console.error("Video play error:", e));
                 startAnalysisLoop();
             };
         })
-        .catch(() => {
-            alert('Camera access denied.');
+        .catch((err) => {
+            console.error('Camera error:', err);
+            alert('Camera access failed: ' + err.name + ' - ' + err.message);
             goBack('view-method');
         });
 }
