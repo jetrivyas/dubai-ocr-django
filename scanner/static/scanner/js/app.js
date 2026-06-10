@@ -434,6 +434,9 @@ function autoCapture() {
     ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
 
     captureCanvas.toBlob(blob => {
+        if (debugImageUrl) URL.revokeObjectURL(debugImageUrl);
+        debugImageUrl = URL.createObjectURL(blob);
+
         if (scanStep === 'front') {
             capturedImages.front = blob;
             stopScanning();
@@ -501,6 +504,8 @@ function processImages() {
 // ============================================================
 // 8. Response handling
 // ============================================================
+let debugImageUrl = null;
+
 function handleApiResponse(data) {
     lastApiResponse = data;
 
@@ -528,18 +533,18 @@ function handleApiResponse(data) {
     const m3 = Boolean(ocr.mrz3 && ocr.mrz3.trim().length > 5);
 
     // Debug string to show exactly what the API returned
-    const debugMrz = `[API returned -> mrz1: "${ocr.mrz1 || ''}", mrz2: "${ocr.mrz2 || ''}", mrz3: "${ocr.mrz3 || ''}"]`;
+    const debugMrz = `\n[API returned -> mrz1: "${ocr.mrz1 || ''}", mrz2: "${ocr.mrz2 || ''}", mrz3: "${ocr.mrz3 || ''}"]`;
 
     if (currentDocType === 'passport') {
         // Passport requires exactly 2 MRZ lines (mrz1, mrz2) and NO mrz3
         if (!(m1 && m2 && !m3)) {
-            showResultsError(`Invalid Scan: Passport must have exactly 2 MRZ lines detected.`);
+            showResultsError(`Invalid Scan: Passport must have exactly 2 MRZ lines detected. ${debugMrz}`);
             return;
         }
     } else if (currentDocType === 'id') {
         // ID requires exactly 3 MRZ lines (mrz1, mrz2, mrz3)
         if (!(m1 && m2 && m3)) {
-            showResultsError(`Invalid Scan: ID Card must have exactly 3 MRZ lines detected.`);
+            showResultsError(`Invalid Scan: ID Card must have exactly 3 MRZ lines detected. ${debugMrz}`);
             return;
         }
     }
@@ -547,7 +552,7 @@ function handleApiResponse(data) {
     if (isExtractedValid(data)) {
         showResultsSuccess(data);
     } else {
-        showResultsError('Extraction failed — could not read clearly or missing critical fields.');
+        showResultsError('Extraction failed — could not read clearly or missing critical fields. ' + debugMrz);
     }
 }
 
@@ -608,6 +613,12 @@ function showResultsSuccess(data) {
     document.getElementById('result-title').className   = 'text-3xl font-bold text-emerald-400';
     document.getElementById('result-message').classList.add('hidden');
     document.getElementById('copy-container').classList.remove('hidden');
+    
+    if (debugImageUrl) {
+        document.getElementById('debug-image').src = debugImageUrl;
+        document.getElementById('debug-image-container').classList.remove('hidden');
+    }
+
     const rc = document.getElementById('result-content');
     rc.classList.remove('hidden');
     rc.innerHTML = '';
@@ -625,4 +636,9 @@ function showResultsError(msg) {
     rm.textContent = msg + ' Please try again.';
     document.getElementById('copy-container').classList.add('hidden');
     document.getElementById('result-content').classList.add('hidden');
+
+    if (debugImageUrl) {
+        document.getElementById('debug-image').src = debugImageUrl;
+        document.getElementById('debug-image-container').classList.remove('hidden');
+    }
 }
