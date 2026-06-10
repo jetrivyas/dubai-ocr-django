@@ -12,7 +12,7 @@ let lastApiResponse = null;
 let prevFrameData  = null;
 let stableCount    = 0;        // how many consecutive frames were stable
 let allPassCount   = 0;        // how many consecutive frames had ALL checks green
-const CAPTURE_AFTER = 5;       // auto-capture after this many consecutive all-green frames
+const CAPTURE_AFTER = 8;       // auto-capture after this many consecutive all-green frames
 
 // ============================================================
 // DOM refs
@@ -264,8 +264,8 @@ function analyseFrame() {
     const blurScore = lapN > 0 ? lapSum / lapN : 0;
 
     let blurOk = false, blurLabel, blurHint = '';
-    if (blurScore < 2)        { blurLabel = 'Blurry';  blurHint = '📷 Very blurry — hold steady & focus'; }
-    else if (blurScore < 4)   { blurLabel = 'Soft';    blurHint = '📷 Slightly blurry — hold steady'; }
+    if (blurScore < 3)        { blurLabel = 'Blurry';  blurHint = '📷 Very blurry — hold steady & focus'; }
+    else if (blurScore < 6)   { blurLabel = 'Soft';    blurHint = '📷 Slightly blurry — hold steady'; }
     else                      { blurLabel = 'Sharp';   blurOk = true; }
 
     // ---- 3. STABILITY (frame-to-frame diff) ----
@@ -288,8 +288,8 @@ function analyseFrame() {
         }
         const avgDiff = diffSum / curSample.length;
 
-        if (avgDiff < 8)       { stableLabel = 'Stable';   stableOk = true; stableCount++; }
-        else if (avgDiff < 15) { stableLabel = 'Moving';   stableHint = '🤚 Hold still'; stableCount = Math.max(0, stableCount - 1); }
+        if (avgDiff < 6)       { stableLabel = 'Stable';   stableOk = true; stableCount++; }
+        else if (avgDiff < 12) { stableLabel = 'Moving';   stableHint = '🤚 Hold still'; stableCount = Math.max(0, stableCount - 1); }
         else                   { stableLabel = 'Shaky';    stableHint = '🤚 Too much movement'; stableCount = 0; }
     } else {
         stableLabel = 'Wait...';
@@ -317,7 +317,7 @@ function analyseFrame() {
 
     // ---- 5. OVERALL QUALITY ----
     const passed = [lightOk, blurOk, stableOk, scaleOk].filter(Boolean).length;
-    let qualityOk = passed >= 3 && stableCount >= 1;
+    let qualityOk = passed === 4 && stableCount >= 1;
     let qualityLabel = qualityOk ? 'Ready' : (passed >= 3 ? 'Almost' : (passed >= 2 ? 'Fair' : 'Poor'));
 
     // ---- Update UI ----
