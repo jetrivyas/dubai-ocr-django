@@ -117,8 +117,7 @@ function startScanning() {
 
     // Overlay + instruction
     cameraOverlay.className =
-        'absolute border-2 border-dashed rounded-lg transition-all duration-300 ' +
-        'shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]';
+        'absolute border-2 border-dashed rounded-lg transition-all duration-300 z-10';
 
     if (currentDocType === 'passport') {
         cameraOverlay.classList.add('overlay-passport', 'border-blue-400');

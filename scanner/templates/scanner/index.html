@@ -76,11 +76,11 @@
             <h2 id="scanner-instruction" class="text-lg font-semibold text-center text-blue-300">Scanning...</h2>
             
             <!-- Camera Feed -->
-            <div class="relative w-full max-w-lg bg-black rounded-lg overflow-hidden flex justify-center items-center aspect-[4/3]">
-                <video id="camera-feed" class="w-full h-full object-cover" autoplay playsinline muted></video>
-                <div id="camera-overlay" class="absolute border-2 border-dashed rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] transition-all duration-300"></div>
+            <div class="relative w-full max-w-lg bg-black rounded-lg overflow-hidden flex justify-center items-center aspect-[4/3] z-0">
+                <video id="camera-feed" class="absolute inset-0 w-full h-full object-cover z-0" autoplay playsinline muted></video>
+                <div id="camera-overlay" class="absolute border-2 border-dashed rounded-lg transition-all duration-300 z-10"></div>
                 <!-- Scan line animation -->
-                <div id="scan-line" class="absolute left-[15%] right-[15%] h-[3px] bg-red-500 rounded-full opacity-0 transition duration-300" style="top: 20%;"></div>
+                <div id="scan-line" class="absolute left-[15%] right-[15%] h-[3px] bg-red-500 rounded-full opacity-0 transition duration-300 z-20" style="top: 20%;"></div>
             </div>
 
             <!-- Live Feedback -->
