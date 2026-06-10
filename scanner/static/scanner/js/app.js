@@ -410,17 +410,16 @@ function autoCapture() {
     stopAnalysisLoop();
 
     const video = cameraFeed;
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
 
-    // Use the dynamic crop rectangle matching the exact visual overlay
-    const { sx, sy, sw, sh } = getCropRect();
-
-    // Set canvas to the cropped dimensions
-    captureCanvas.width  = sw;
-    captureCanvas.height = sh;
+    // Set canvas to the FULL video dimensions instead of cropping
+    captureCanvas.width  = vw;
+    captureCanvas.height = vh;
     
     const ctx = captureCanvas.getContext('2d');
-    // Draw only the cropped portion from the video
-    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh);
+    // Draw the entire full-resolution video frame
+    ctx.drawImage(video, 0, 0, vw, vh);
 
     captureCanvas.toBlob(blob => {
         if (scanStep === 'front') {
@@ -439,7 +438,7 @@ function autoCapture() {
             stopScanning();
             processImages();
         }
-    }, 'image/jpeg', 0.95);
+    }, 'image/jpeg', 1.0);
 }
 
 // ============================================================
