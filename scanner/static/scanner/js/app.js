@@ -453,7 +453,7 @@ function autoCapture() {
             stopScanning();
             processImages();
         }
-    }, 'image/png');
+    }, 'image/jpeg', 0.95);
 }
 
 // ============================================================
@@ -496,9 +496,18 @@ function processImages() {
     fileBack.value  = '';
 
     fetch(url, { method: 'POST', body: formData })
-        .then(r => r.json())
+        .then(async r => {
+            if (!r.ok) {
+                const text = await r.text();
+                throw new Error(`HTTP ${r.status} - ${text.substring(0, 100)}`);
+            }
+            return r.json();
+        })
         .then(data => handleApiResponse(data))
-        .catch(err => { console.error(err); showResultsError('Network error or backend failed.'); });
+        .catch(err => { 
+            console.error(err); 
+            showResultsError(`Network Error: ${err.message}`); 
+        });
 }
 
 // ============================================================
