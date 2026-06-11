@@ -413,25 +413,14 @@ function autoCapture() {
     const vw = video.videoWidth;
     const vh = video.videoHeight;
 
-    // Get the strict bounding box
-    const { sx, sy, sw, sh } = getCropRect();
-
-    // Add a 15% padding around the bounding box so we don't cut off MRZ or edges
-    const paddingX = Math.floor(sw * 0.15);
-    const paddingY = Math.floor(sh * 0.15);
-
-    const cropX = Math.max(0, sx - paddingX);
-    const cropY = Math.max(0, sy - paddingY);
-    const cropW = Math.min(vw - cropX, sw + (paddingX * 2));
-    const cropH = Math.min(vh - cropY, sh + (paddingY * 2));
-
-    // Set canvas to the padded crop dimensions
-    captureCanvas.width  = cropW;
-    captureCanvas.height = cropH;
+    // Stop cropping! The API's OCR models are likely trained on full photos. 
+    // If we crop it too tightly, the text features become too large and confuse the neural network.
+    // Send the full, uncropped 4K frame to the API, exactly like a native phone photo.
+    captureCanvas.width  = vw;
+    captureCanvas.height = vh;
     
     const ctx = captureCanvas.getContext('2d');
-    // Draw only the padded portion from the video
-    ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+    ctx.drawImage(video, 0, 0, vw, vh);
 
     captureCanvas.toBlob(blob => {
         if (debugImageUrl) URL.revokeObjectURL(debugImageUrl);
