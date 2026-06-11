@@ -164,6 +164,13 @@
 
             <div id="result-content" class="w-full bg-gray-900 rounded-lg p-4 text-sm font-mono overflow-auto text-left border border-gray-700">
             </div>
+            
+            <!-- Debug Image Container -->
+            <div id="debug-image-container" class="w-full max-w-sm hidden flex-col items-center gap-2">
+                <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">Image Sent to API</span>
+                <img id="debug-image" class="w-full h-auto rounded-lg border-2 border-gray-700">
+            </div>
+
             <div id="result-message" class="text-red-400 font-semibold hidden text-center"></div>
             <button onclick="resetFlow()" class="px-8 py-3 bg-gray-700 hover:bg-gray-600 rounded-full font-semibold text-lg transition-colors shadow-lg">
                 Try Again
