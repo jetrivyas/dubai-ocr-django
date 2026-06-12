@@ -27,6 +27,10 @@ import os
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('RENDER') is None
 
+# MongoDB Connection
+MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
+MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'dubai_ocr')
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
